@@ -5,5 +5,5 @@
 build img
 
 ```sh
-docker build -t seller_service_php:v1 .
+docker build -t products_service_php:v1 .
 ```
