@@ -10,11 +10,11 @@ services:
     env_file:
       - ./database/mysql/.env
     ports:
-      - "3306:3306"
+      - "3307:3306"  # Host port 3307 maps to container port 3306
     volumes:
       - products_service_mysql_data:/var/lib/mysql
     networks:
-      app_network:
+      shared_network:
         ipv4_address: 192.168.0.110  # products_service_mysql IP
 
   products_service_php:
@@ -28,14 +28,14 @@ services:
       - ./web/php/.env
     restart: always
     ports:
-      - "9000:9000"
+      - "9001:9000"  # Host port 9001 maps to container port 9000
     volumes:
       - ./web/php:/var/www/html/x2microservices-products-service
       - ./web/php/vendor:/var/www/html/x2microservices-products-service/vendor
     depends_on:
       - products_service_mysql
     networks:
-      app_network:
+      shared_network:
         ipv4_address: 192.168.0.111  # products_service_php IP
 
   products_service_nginx:
@@ -44,26 +44,28 @@ services:
       dockerfile: Dockerfile
     image: products_service_nginx:v1
     container_name: products_service_nginx_container
-    working_dir: /var/www/html/x2microservices-products-service
+    working_dir: /etc/nginx
     env_file:
       - ./web/nginx/.env
     restart: always
     ports:
-      - "8000:8000"
+      - "8001:8001"
+    volumes:
+      - ./web/nginx:/etc/nginx
     depends_on:
       - products_service_php
     networks:
-      app_network:
+      shared_network:
         ipv4_address: 192.168.0.112  # products_service_nginx IP
 
 volumes:
   products_service_mysql_data:
 
 networks:
-  app_network:
+  shared_network:
     driver: bridge
     ipam:
       config:
         - subnet: "192.168.0.0/24"
           gateway: "192.168.0.1"
-    external: false
+    external: true

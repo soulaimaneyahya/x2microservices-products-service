@@ -7,6 +7,8 @@ docker-compose up -d
 
 docker cli
 ```sh
+cd /var/www/html/x2microservices-products-service
+
 docker logs products_service_mysql_container
 
 docker network inspect products_service_network
